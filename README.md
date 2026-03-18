@@ -1,12 +1,12 @@
 # DUMB Personal Website
 
-一个带有电影感视觉风格的个人博客落地页项目，支持：
+一个带有电影感视觉风格的个人博客落地页项目，现已改造为 **Vercel 一体化部署**，支持：
 
 - 首页视频背景 + 玻璃质感卡片
 - Flatland 卡片分页展示（仅显示日期/标题/分类）
 - 文章详情页（支持文字、图片、视频、音频、链接内容块）
 - Studio 发布后台（登录后可增删改查）
-- 本地图片/视频上传并回填到内容块
+- Cloudinary 图片/视频上传并回填到内容块
 
 ---
 
@@ -22,9 +22,9 @@
 ### Backend
 
 - Node.js + Express + TypeScript
-- Prisma + SQLite
+- Prisma + PostgreSQL（Neon / Supabase）
 - JWT 鉴权（管理员登录）
-- Multer 本地媒体上传
+- Multer + Cloudinary 对象存储上传
 
 ---
 
@@ -36,11 +36,11 @@
 │  ├─ pages/                # 页面（详情、Studio）
 │  ├─ lib/                  # API 与鉴权工具
 │  └─ content/              # 内容类型定义（前端类型）
-├─ backend/                 # 后端服务
+├─ api/                     # Vercel Serverless Function 入口
+├─ backend/                 # 后端逻辑（Express 路由与业务）
 │  ├─ src/routes/           # auth/posts/uploads 接口
-│  ├─ prisma/               # 数据模型与迁移
-│  └─ uploads/              # 上传文件目录（运行时生成）
-└─ deploy/                  # 服务器部署模板（Nginx/脚本）
+├─ prisma/                  # Prisma Schema 与 Seed（Vercel 使用）
+└─ vercel.json              # Vercel 构建配置
 ```
 
 ---
@@ -58,29 +58,33 @@ cd backend
 npm install
 ```
 
-### 2) 配置后端环境变量
+### 2) 配置环境变量
 
 ```bash
-cd backend
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 建议至少修改：
 
+- `VITE_API_BASE_URL`
 - `JWT_SECRET`
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
-- `FRONTEND_ORIGIN`
+- `DATABASE_URL`
+- `DIRECT_DATABASE_URL`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 
-### 3) 初始化数据库
+### 3) 初始化数据库（Postgres）
 
 ```bash
-cd backend
-npm run prisma:migrate -- --name init
+npm run prisma:generate
+npm run prisma:push
 npm run prisma:seed
 ```
 
-### 4) 启动服务
+### 4) 启动服务（本地）
 
 ```bash
 # 终端 1：后端
@@ -88,6 +92,7 @@ cd backend
 npm run dev
 
 # 终端 2：前端
+set VITE_API_BASE_URL=http://localhost:4000
 npm run dev
 ```
 
@@ -110,17 +115,18 @@ npm run dev
 
 ---
 
-## 生产部署
+## Vercel 部署（全栈）
 
-仓库内已提供部署模板：
+1. 把仓库导入 Vercel
+2. 在 Vercel 项目里配置环境变量（与 `.env.example` 保持一致）
+3. Build Command 使用仓库内默认配置（`vercel.json` 已指定）
+4. 首次部署前，确保 Postgres 数据库可连通
+5. 部署后访问 `/studio` 登录发布
 
-- 说明文档：`deploy/README.md`
-- Nginx 模板：`deploy/nginx/dumb.conf`
-- 服务器初始化：`deploy/scripts/server-bootstrap.sh`
-- 一键部署脚本：`deploy/scripts/deploy.sh`
-- PM2 配置：`backend/ecosystem.config.cjs`
-
-推荐部署形态：`Nginx + PM2 + Node API + SQLite + 本地上传目录备份`。
+部署后接口路径统一为 `/api/*`，例如：
+- `/api/auth/login`
+- `/api/posts`
+- `/api/media/upload`
 
 ---
 
@@ -128,10 +134,8 @@ npm run dev
 
 - 不要在生产环境使用弱密码
 - `JWT_SECRET` 必须使用高强度随机值
-- 定期备份：
-  - `backend/prisma/dev.db`
-  - `backend/uploads/`
-- 为站点启用 HTTPS（Certbot + Nginx）
+- 请仅在服务端环境变量中保存 Cloudinary 密钥
+- Postgres 建议启用自动备份与只读账号
 
 ---
 

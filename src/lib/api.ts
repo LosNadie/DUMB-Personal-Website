@@ -1,7 +1,7 @@
 import type { ContentBlock } from '@/content/types'
 import { getStudioToken } from './auth'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
 export type PostCard = {
   id: string
