@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --background: 210 28% 95%;
+  --foreground: 215 33% 14%;
+  --muted-foreground: 220 10% 43%;
+  --primary: 215 33% 14%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 20% 90%;
+  --muted: 210 20% 90%;
+  --accent: 210 20% 90%;
+  --accent-foreground: 215 33% 14%;
+  --border: 214 14% 78%;
+  --input: 214 14% 78%;
+  --font-display: 'Instrument Serif', serif;
+  --font-body: 'Inter', sans-serif;
+  --flatland-transition-ms: 900ms;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-muted: hsl(var(--muted));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    font-family: var(--font-body);
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+.liquid-glass {
+  background: rgba(255, 255, 255, 0.35);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid hsl(var(--border));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.flatland-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.page-section-transition {
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+  will-change: opacity, transform;
+}
+
+.page-section-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-section-muted {
+  opacity: 0.72;
+  transform: translateY(20px);
+}
+
+.flatland-layer-static {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flatland-layer-enter {
+  animation: flatland-enter var(--flatland-transition-ms) ease-out both;
+}
+
+.flatland-layer-leave {
+  animation: flatland-leave var(--flatland-transition-ms) ease-out both;
+}
+
+@keyframes flatland-enter {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flatland-leave {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
