@@ -1,162 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
 
-import { getPostDetail, type PostDetail } from '@/lib/api'
-import { CONTENT_BLOCK_TYPE, type ContentBlock } from '@/content/types'
-
-function toEmbeddableVideoUrl(url: string) {
-  try {
-    const parsed = new URL(url)
-    if (parsed.hostname.includes('youtube.com')) {
-      const videoId = parsed.searchParams.get('v')
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-    }
-    if (parsed.hostname.includes('youtu.be')) {
-      const videoId = parsed.pathname.replace('/', '')
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-    }
-    if (parsed.hostname.includes('player.bilibili.com')) {
-      return url
-    }
-    return null
-  } catch {
-    return null
-  }
-}
-
-function isDirectVideo(url: string) {
-  return /^data:video\//i.test(url) || /\.(mp4|webm|ogg)(\?|#|$)/i.test(url)
-}
-
-function renderBlock(block: ContentBlock) {
-  switch (block.type) {
-    case CONTENT_BLOCK_TYPE.TEXT:
-      return (
-        <p className="text-base leading-relaxed text-foreground sm:text-lg">
-          {block.text}
-        </p>
-      )
-
-    case CONTENT_BLOCK_TYPE.IMAGE:
-      return (
-        <figure className="space-y-3">
-          <img src={block.src} alt={block.alt} className="w-full rounded-2xl object-cover" />
-          <a
-            href={block.src}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-muted-foreground underline underline-offset-4"
-          >
-            打开图片原链接
-          </a>
-          {block.caption ? (
-            <figcaption className="text-sm text-muted-foreground">{block.caption}</figcaption>
-          ) : null}
-        </figure>
-      )
-
-    case CONTENT_BLOCK_TYPE.VIDEO:
-      {
-      if (isDirectVideo(block.src)) {
-        return (
-          <div className="space-y-3">
-            <video controls className="w-full rounded-2xl">
-              <source src={block.src} type="video/mp4" />
-            </video>
-            <a
-              href={block.src}
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs text-muted-foreground underline underline-offset-4"
-            >
-              打开视频原链接
-            </a>
-            {block.title ? (
-              <p className="text-sm text-muted-foreground">{block.title}</p>
-            ) : null}
-          </div>
-        )
-      }
-
-      const embedUrl = toEmbeddableVideoUrl(block.src)
-      if (embedUrl) {
-        return (
-          <div className="space-y-3">
-            <iframe
-              src={embedUrl}
-              title={block.title || 'video'}
-              className="aspect-video w-full rounded-2xl"
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-            />
-            <a
-              href={block.src}
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs text-muted-foreground underline underline-offset-4"
-            >
-              打开视频原链接
-            </a>
-            {block.title ? (
-              <p className="text-sm text-muted-foreground">{block.title}</p>
-            ) : null}
-          </div>
-        )
-      }
-
-      return (
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            当前视频链接不是可直接播放地址，请使用 mp4 直链或可嵌入视频链接。
-          </p>
-          <a
-            href={block.src}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-foreground underline underline-offset-4"
-          >
-            打开视频链接
-          </a>
-          {block.title ? (
-            <p className="text-sm text-muted-foreground">{block.title}</p>
-          ) : null}
-        </div>
-      )
-      }
-
-    case CONTENT_BLOCK_TYPE.AUDIO:
-      return (
-        <div className="space-y-3">
-          <audio controls className="w-full">
-            <source src={block.src} type="audio/mpeg" />
-          </audio>
-          {block.title ? (
-            <p className="text-sm text-muted-foreground">{block.title}</p>
-          ) : null}
-        </div>
-      )
-
-    case CONTENT_BLOCK_TYPE.LINK:
-      return (
-        <div className="space-y-2">
-          <a
-            href={block.url}
-            target="_blank"
-            rel="noreferrer"
-            className="text-base text-foreground underline underline-offset-4"
-          >
-            {block.label}
-          </a>
-          {block.description ? (
-            <p className="text-sm text-muted-foreground">{block.description}</p>
-          ) : null}
-        </div>
-      )
-
-    default:
-      return null
-  }
-}
+import { getPostDetail, type PostDetail } from '@/lib/content'
 
 function PostDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -186,7 +32,7 @@ function PostDetailPage() {
       }
     }
 
-    fetchPost()
+    void fetchPost()
   }, [slug])
 
   if (isLoading) {
@@ -261,11 +107,18 @@ function PostDetailPage() {
         </header>
 
         <section className="space-y-8 pb-12">
-          {post.blocks.map((block) => (
-            <article key={block.id} className="liquid-glass rounded-2xl p-6 sm:p-7">
-              {renderBlock(block)}
-            </article>
-          ))}
+          <article className="liquid-glass rounded-2xl p-6 sm:p-7">
+            <div className="prose prose-invert max-w-none text-foreground">
+              <ReactMarkdown
+                components={{
+                  a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
+                  img: (props) => <img {...props} className="my-4 w-full rounded-2xl" alt={props.alt || '图片'} />,
+                }}
+              >
+                {post.content}
+              </ReactMarkdown>
+            </div>
+          </article>
         </section>
 
         <footer className="pb-6 text-center">

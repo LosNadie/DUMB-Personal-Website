@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { listPosts, type PostCard } from '@/lib/api'
+import { listPosts, type PostCard } from '@/lib/content'
 
 const FLATLAND_PAGE_SIZE = 9
 const FLATLAND_TRANSITION_MS = 900

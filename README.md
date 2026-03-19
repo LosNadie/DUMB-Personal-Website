@@ -1,30 +1,22 @@
 # DUMB Personal Website
 
-一个带有电影感视觉风格的个人博客落地页项目，现已改造为 **Vercel 一体化部署**，支持：
+一个电影感风格的个人博客落地页，采用 **无后端静态部署** 方案：
 
-- 首页视频背景 + 玻璃质感卡片
-- Flatland 卡片分页展示（仅显示日期/标题/分类）
-- 文章详情页（支持文字、图片、视频、音频、链接内容块）
-- Studio 发布后台（登录后可增删改查）
-- Cloudinary 图片/视频上传并回填到内容块
+- 首页视频背景 + 玻璃质感视觉
+- Flatland 卡片列表（仅展示日期/标题/分类）
+- 文章详情页（Markdown 渲染）
+- Decap CMS 在线发布（写入 GitHub，Vercel 自动发布）
 
 ---
 
 ## 技术栈
 
-### Frontend
-
 - React 19 + TypeScript + Vite
 - Tailwind CSS v4
-- shadcn/ui（基础 Button 与样式体系）
 - React Router
-
-### Backend
-
-- Node.js + Express + TypeScript
-- Prisma + PostgreSQL（Neon / Supabase）
-- JWT 鉴权（管理员登录）
-- Multer + Cloudinary 对象存储上传
+- React Markdown
+- Decap CMS（Git-based CMS）
+- Vercel（静态托管 + 自动构建）
 
 ---
 
@@ -32,110 +24,109 @@
 
 ```text
 .
-├─ src/                     # 前端应用
-│  ├─ pages/                # 页面（详情、Studio）
-│  ├─ lib/                  # API 与鉴权工具
-│  └─ content/              # 内容类型定义（前端类型）
-├─ api/                     # Vercel Serverless Function 入口
-├─ backend/                 # 后端逻辑（Express 路由与业务）
-│  ├─ src/routes/           # auth/posts/uploads 接口
-├─ prisma/                  # Prisma Schema 与 Seed（Vercel 使用）
-└─ vercel.json              # Vercel 构建配置
+├─ public/
+│  └─ admin/                  # Decap CMS 后台入口与配置
+├─ src/
+│  ├─ content/
+│  │  └─ posts/               # Markdown 文章内容（frontmatter + body）
+│  ├─ lib/
+│  │  └─ content.ts           # 静态内容读取与分页/详情查询
+│  ├─ pages/
+│  │  ├─ PostDetailPage.tsx   # Markdown 详情页
+│  │  └─ StudioPage.tsx       # CMS 入口说明页（跳转 /admin）
+│  └─ App.tsx                 # 首页与 Flatland 列表
+└─ vercel.json                # Vercel 构建配置
 ```
+
+---
+
+## 内容格式
+
+文章文件位于：`src/content/posts/*.md`
+
+示例：
+
+```md
+---
+slug: "my-first-post"
+title: "我的第一篇文章"
+category: "随笔"
+publishedAt: "2026-03-19"
+---
+
+这里是正文，支持 Markdown。
+```
+
+字段说明：
+
+- `slug`：唯一标识，用于详情页路由
+- `title`：标题
+- `category`：`生活` / `随笔` / `工作`
+- `publishedAt`：发布日期，格式 `YYYY-MM-DD`
+- `body`：Markdown 正文（frontmatter 下面的内容）
 
 ---
 
 ## 本地开发
 
-### 1) 安装依赖
-
 ```bash
-# 前端
 npm install
-
-# 后端
-cd backend
-npm install
-```
-
-### 2) 配置环境变量
-
-```bash
-cp .env.example .env.local
-```
-
-建议至少修改：
-
-- `VITE_API_BASE_URL`
-- `JWT_SECRET`
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`
-- `DATABASE_URL`
-- `DIRECT_DATABASE_URL`
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-
-### 3) 初始化数据库（Postgres）
-
-```bash
-npm run prisma:generate
-npm run prisma:push
-npm run prisma:seed
-```
-
-### 4) 启动服务（本地）
-
-```bash
-# 终端 1：后端
-cd backend
-npm run dev
-
-# 终端 2：前端
-set VITE_API_BASE_URL=http://localhost:4000
 npm run dev
 ```
 
-- 前端默认：`http://localhost:5173`
-- 后端默认：`http://localhost:4000`
-- 发布后台：`/studio`
+默认地址：`http://localhost:5173`
 
 ---
 
-## Studio 发布能力（当前）
+## Decap CMS 配置与使用
 
-- 登录鉴权（管理员邮箱密码）
-- 文章 CRUD（增删改查）
-- 内容块支持：
-  - `text`
-  - `image`（本地上传或外链）
-  - `video`（本地上传或外链）
-  - `audio`（链接）
-  - `link`
+### 1) 访问后台
+
+- 本地：`http://localhost:5173/admin`
+- 线上：`https://你的域名/admin`
+
+### 2) GitHub 授权（必须）
+
+Decap 使用 GitHub 写入仓库，需配置 GitHub OAuth App + Vercel OAuth 函数：
+
+- Homepage URL：`https://dumb-personal-website.vercel.app/admin/`
+- Authorization callback URL：`https://dumb-personal-website.vercel.app/api/oauth/callback`
+
+并在 Vercel 项目环境变量中配置：
+
+- `ORIGIN=https://dumb-personal-website.vercel.app`
+- `COMPLETE_URL=https://dumb-personal-website.vercel.app/api/oauth/callback`
+- `ADMIN_PANEL_URL=https://dumb-personal-website.vercel.app/admin/`
+- `OAUTH_PROVIDER=github`
+- `OAUTH_CLIENT_ID=<你的 GitHub OAuth Client ID>`
+- `OAUTH_CLIENT_SECRET=<你的 GitHub OAuth Client Secret>`
+- `OAUTH_SCOPES=repo,user,read:org`
+
+### 3) 发布流程
+
+1. 在 `/admin` 新建或编辑文章
+2. 保存并进入发布流（Editorial Workflow）
+3. 合并到 `main`
+4. Vercel 自动构建上线
 
 ---
 
-## Vercel 部署（全栈）
+## Vercel 部署（无后端）
 
-1. 把仓库导入 Vercel
-2. 在 Vercel 项目里配置环境变量（与 `.env.example` 保持一致）
-3. Build Command 使用仓库内默认配置（`vercel.json` 已指定）
-4. 首次部署前，确保 Postgres 数据库可连通
-5. 部署后访问 `/studio` 登录发布
-
-部署后接口路径统一为 `/api/*`，例如：
-- `/api/auth/login`
-- `/api/posts`
-- `/api/media/upload`
+1. 将仓库导入 Vercel
+2. 保持默认构建命令：`npm run build`
+3. 输出目录：`dist`
+4. 完成部署后访问 `/admin` 开始发布
 
 ---
 
-## 安全与运维建议
+## 注意事项
 
-- 不要在生产环境使用弱密码
-- `JWT_SECRET` 必须使用高强度随机值
-- 请仅在服务端环境变量中保存 Cloudinary 密钥
-- Postgres 建议启用自动备份与只读账号
+- 当前方案是“无后端”，不包含运行时数据库与上传 API。
+- 图片/视频建议用：
+  - Markdown 外链（CDN/图床）
+  - 或仓库内静态资源（`public/uploads`）
+- 媒体文件过大可能导致仓库膨胀，建议压缩后再上传。
 
 ---
 

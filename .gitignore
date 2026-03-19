@@ -23,7 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Backend runtime artifacts
-backend/uploads
-backend/prisma/dev.db
-backend/prisma/dev.db-journal
+# Removed architecture leftovers
+backend/
+deploy/
+prisma/
+
+.vercel

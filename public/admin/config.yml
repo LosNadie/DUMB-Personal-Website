@@ -1,0 +1,35 @@
+backend:
+  name: github
+  repo: LosNadie/DUMB-Personal-Website
+  branch: main
+  base_url: https://dumb-personal-website.vercel.app
+  auth_endpoint: api/oauth
+  open_authoring: true
+
+publish_mode: editorial_workflow
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+site_url: "https://dumb-personal-website.vercel.app"
+display_url: "https://dumb-personal-website.vercel.app"
+logo_url: "/favicon.svg"
+
+collections:
+  - name: "posts"
+    label: "文章"
+    folder: "src/content/posts"
+    create: true
+    extension: "md"
+    format: "frontmatter"
+    slug: "{{slug}}"
+    fields:
+      - { label: "Slug", name: "slug", widget: "string", hint: "文章唯一标识，例如: my-first-post" }
+      - { label: "标题", name: "title", widget: "string" }
+      - label: "分类"
+        name: "category"
+        widget: "select"
+        options: ["生活", "随笔", "工作"]
+        default: "随笔"
+      - { label: "发布日期", name: "publishedAt", widget: "date", format: "YYYY-MM-DD" }
+      - { label: "正文", name: "body", widget: "markdown" }
