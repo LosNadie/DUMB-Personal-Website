@@ -5,7 +5,7 @@ backend:
   base_url: https://dumb-personal-website.vercel.app
   auth_endpoint: api/oauth
   open_authoring: true
-  backend.app_id:59b49c7eda38a7584a7f86a5395efc520a908be4
+  app_id:59b49c7eda38a7584a7f86a5395efc520a908be4
 
 publish_mode: editorial_workflow
 
