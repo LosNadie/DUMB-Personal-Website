@@ -2,11 +2,6 @@ backend:
   name: github
   repo: LosNadie/DUMB-Personal-Website
   branch: main
-  base_url: https://dumb-personal-website.vercel.app
-  auth_endpoint: api/oauth
-  open_authoring: true
-
-publish_mode: editorial_workflow
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
