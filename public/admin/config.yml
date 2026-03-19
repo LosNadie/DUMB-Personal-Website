@@ -4,7 +4,6 @@ backend:
   branch: main
   base_url: https://dumb-personal-website.vercel.app
   auth_endpoint: api/oauth
-  open_authoring: true
 
 
 publish_mode: editorial_workflow
