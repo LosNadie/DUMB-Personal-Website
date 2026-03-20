@@ -4,7 +4,6 @@ backend:
   branch: main
   base_url: https://dumb-personal-website.vercel.app
   auth_endpoint: api/oauth
-  open_authoring: true
 
 
 publish_mode: editorial_workflow
@@ -32,5 +31,10 @@ collections:
         widget: "select"
         options: ["生活", "随笔", "工作"]
         default: "随笔"
-      - { label: "发布日期", name: "publishedAt", widget: "date", format: "YYYY-MM-DD" }
+      - label: "发布日期"
+        name: "publishedAt"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
       - { label: "正文", name: "body", widget: "markdown" }

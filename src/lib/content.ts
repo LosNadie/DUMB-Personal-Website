@@ -59,6 +59,18 @@ function normalizeCategory(category: string): PostCategory {
   return '随笔'
 }
 
+function getTodayDateString() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function normalizePublishedAt(value: string | undefined) {
+  const source = (value || '').trim()
+  if (/^\d{4}-\d{2}-\d{2}$/.test(source)) {
+    return source
+  }
+  return getTodayDateString()
+}
+
 function readAllPosts(): PostDetail[] {
   const allPosts = Object.entries(markdownModules).map(([filePath, raw]) => {
     const { frontmatter, body } = parseFrontmatter(raw)
@@ -66,7 +78,7 @@ function readAllPosts(): PostDetail[] {
     const slug = frontmatter.slug || fallbackSlug
     const title = frontmatter.title || slug
     const category = normalizeCategory(frontmatter.category || '')
-    const publishedAt = frontmatter.publishedAt || '1970-01-01'
+    const publishedAt = normalizePublishedAt(frontmatter.publishedAt)
 
     return {
       id: slug,
