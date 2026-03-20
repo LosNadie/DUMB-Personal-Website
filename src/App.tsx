@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { listPosts, type PostCard } from '@/lib/content'
 
-const FLATLAND_PAGE_SIZE = 9
+const FLATLAND_PAGE_SIZE = 4
 const FLATLAND_TRANSITION_MS = 900
 
 const SECTION_KEY = {
@@ -40,11 +40,6 @@ const aboutSocialLinks: SocialLink[] = [
     label: 'B站',
     href: 'https://b23.tv/rI1olZP',
     iconUrl: 'https://cdn.simpleicons.org/bilibili/111827',
-  },
-  {
-    label: 'X',
-    href: 'https://x.com/DumbBoy_qwq',
-    iconUrl: 'https://cdn.simpleicons.org/x/111827',
   },
 ]
 
@@ -289,25 +284,26 @@ function App() {
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-3 pb-4">
-            {flatlandPages.map((_, index) => {
-              const page = index + 1
-              const isActive = page === activePage
-
-              return (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handlePageChange(page)}
-                  className={[
-                    'px-2 py-1 text-sm',
-                    isActive ? 'text-foreground' : 'text-muted-foreground',
-                  ].join(' ')}
-                >
-                  {`P${page}`}
-                </button>
-              )
-            })}
+          <div className="flex items-center justify-center gap-4 pb-4 text-sm">
+            <button
+              type="button"
+              onClick={() => handlePageChange(Math.max(1, activePage - 1))}
+              disabled={activePage <= 1}
+              className="px-2 py-1 text-muted-foreground disabled:opacity-40"
+              aria-label="上一页"
+            >
+              {'<'}
+            </button>
+            <span className="text-foreground">{`${activePage} / ${Math.max(1, flatlandPages.length)}`}</span>
+            <button
+              type="button"
+              onClick={() => handlePageChange(Math.min(flatlandPages.length, activePage + 1))}
+              disabled={activePage >= flatlandPages.length}
+              className="px-2 py-1 text-muted-foreground disabled:opacity-40"
+              aria-label="下一页"
+            >
+              {'>'}
+            </button>
           </div>
         </section>
 
