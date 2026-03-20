@@ -1,9 +1,9 @@
 # DUMB Personal Website
 
-一个电影感风格的个人博客落地页，采用 **无后端静态部署** 方案：
+一个电影感风格的个人博客落地页，采用 **无后端静态部署 + GitHub CMS 发布** 方案：
 
 - 首页视频背景 + 玻璃质感视觉
-- Flatland 卡片列表（仅展示日期/标题/分类）
+- Flatland 卡片列表（每页 4 张，2 x 2 居中布局）
 - 文章详情页（Markdown 渲染）
 - Decap CMS 在线发布（写入 GitHub，Vercel 自动发布）
 
@@ -111,6 +111,30 @@ Decap 使用 GitHub 写入仓库，需配置 GitHub OAuth App + Vercel OAuth 函
 
 ---
 
+## 常见问题排查
+
+### 1) `No control for widget 'date'`
+
+原因：Decap 在当前环境下对 `date` 控件兼容性不稳定。  
+当前项目已改为 `datetime` + 仅日期格式输出。
+
+### 2) 发布后显示 `1970-01-01`
+
+原因：文章 `publishedAt` 为空或格式非法。  
+当前项目已在前端内容解析中做兜底：当日期缺失/非法时自动使用当天日期。
+
+### 3) 登录后报 `Your GitHub user account does not have access to this repo`
+
+请依次检查：
+
+- OAuth App 的 callback 是否为  
+  `https://dumb-personal-website.vercel.app/api/oauth/callback`
+- Vercel 环境变量是否包含 `OAUTH_CLIENT_ID` / `OAUTH_CLIENT_SECRET`
+- `OAUTH_SCOPES` 是否为：`repo user read:org`（空格分隔）
+- 当前登录账号是否对仓库 `LosNadie/DUMB-Personal-Website` 有写权限
+
+---
+
 ## Vercel 部署（无后端）
 
 1. 将仓库导入 Vercel
@@ -123,6 +147,7 @@ Decap 使用 GitHub 写入仓库，需配置 GitHub OAuth App + Vercel OAuth 函
 ## 注意事项
 
 - 当前方案是“无后端”，不包含运行时数据库与上传 API。
+- OAuth 登录依赖 Vercel Serverless Function：`/api/oauth` 与 `/api/oauth/callback`。
 - 图片/视频建议用：
   - Markdown 外链（CDN/图床）
   - 或仓库内静态资源（`public/uploads`）
