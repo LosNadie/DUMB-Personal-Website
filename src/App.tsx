@@ -238,7 +238,7 @@ function App() {
             <div className="relative min-h-[760px] w-full">
               {leavingPage !== null && (
                 <div className="flatland-layer flatland-layer-leave pointer-events-none">
-                  <div className="mx-auto grid w-full max-w-6xl place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="mx-auto grid w-full max-w-3xl place-items-center gap-4 sm:grid-cols-2">
                     {previousCards.map((card) => (
                       <article
                         key={`leaving-${card.id}`}
@@ -259,7 +259,7 @@ function App() {
                   leavingPage !== null ? 'flatland-layer-enter' : 'flatland-layer-static',
                 ].join(' ')}
               >
-                <div className="mx-auto grid w-full max-w-6xl place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-3xl place-items-center gap-4 sm:grid-cols-2">
                   {isListLoading ? (
                     <p className="col-span-full text-sm text-muted-foreground">加载中...</p>
                   ) : listError ? (
