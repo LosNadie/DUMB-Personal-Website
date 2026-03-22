@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
+import remarkBreaks from 'remark-breaks'
+import remarkGfm from 'remark-gfm'
 
 import ShaderBackground from '@/components/ShaderBackground'
 import { getPostDetail, type PostDetail } from '@/lib/content'
@@ -87,9 +89,50 @@ function PostDetailPage() {
           <article className="liquid-glass rounded-2xl p-6 sm:p-7">
             <div className="prose prose-invert max-w-none text-foreground">
               <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
                 components={{
-                  a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
+                  a: (props) => (
+                    <a
+                      {...props}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline decoration-1 underline-offset-4"
+                    />
+                  ),
                   img: (props) => <img {...props} className="my-4 w-full rounded-2xl" alt={props.alt || '图片'} />,
+                  p: (props) => <p {...props} className="whitespace-pre-wrap" />,
+                  hr: () => <hr className="my-8 border-0 border-t border-border/80" />,
+                  blockquote: (props) => (
+                    <blockquote
+                      {...props}
+                      className="my-6 rounded-r-xl border-l-4 border-border/90 bg-white/30 px-4 py-3 text-muted-foreground"
+                    />
+                  ),
+                  pre: (props) => (
+                    <pre
+                      {...props}
+                      className="my-6 overflow-x-auto rounded-xl border border-border/80 bg-black/70 p-4 text-sm leading-relaxed text-slate-100"
+                    />
+                  ),
+                  code: ({ children, className, ...props }) => {
+                    const content = String(children).replace(/\n$/, '')
+                    const isCodeBlock = (className || '').includes('language-') || content.includes('\n')
+                    if (isCodeBlock) {
+                      return (
+                        <code {...props} className={`${className || ''} font-mono text-[0.92em]`}>
+                          {content}
+                        </code>
+                      )
+                    }
+                    return (
+                      <code
+                        {...props}
+                        className="rounded-md border border-border/70 bg-white/45 px-1.5 py-0.5 font-mono text-[0.9em] text-foreground"
+                      >
+                        {content}
+                      </code>
+                    )
+                  },
                 }}
               >
                 {post.content}
