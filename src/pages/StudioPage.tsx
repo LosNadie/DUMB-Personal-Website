@@ -1,17 +1,11 @@
 import { Link } from 'react-router-dom'
 
+import ShaderBackground from '@/components/ShaderBackground'
+
 function StudioPage() {
   return (
     <main className="relative min-h-screen bg-background text-foreground">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 z-0 h-full w-full object-cover"
-      >
-        <source src="/hero-bg.mp4" type="video/mp4" />
-      </video>
+      <ShaderBackground />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-10">
         <div className="liquid-glass rounded-2xl p-7 text-center">

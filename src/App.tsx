@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import ShaderBackground from '@/components/ShaderBackground'
 import { listPosts, type PostCard } from '@/lib/content'
 
 const FLATLAND_PAGE_SIZE = 4
@@ -12,9 +13,11 @@ const SECTION_KEY = {
   ABOUT: 'about',
 } as const
 
-const ABOUT_PARAGRAPHS = [
-  '大家好，我是一个热爱生活、兼顾理性与兴趣的人。平时会关注 AI 相关内容，对技术、设计和职业发展有自己的思考，也在认真规划自己的学业与未来方向。',
-  '生活里我是个爱听音乐、喜欢二次元、爱玩游戏的人，偶尔会关注赛事，也很在意和身边人的相处与情绪。如果想更了解我可以看我的社交媒体。',
+const ABOUT_TAG_GROUPS = [
+  ['理性｜Analytical', '生活｜Lifestyle', '学习｜Study'],
+  ['AI｜AI', '技术｜Tech', '设计｜Design'],
+  ['音乐｜Music', '动漫｜Anime', '游戏｜Games'],
+  ['社交｜Social'],
 ]
 
 type SocialLink = {
@@ -185,15 +188,7 @@ function App() {
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 z-0 h-full w-full object-cover"
-      >
-        <source src="/hero-bg.mp4" type="video/mp4" />
-      </video>
+      <ShaderBackground />
 
       <div className="relative z-10">
         <section
@@ -322,11 +317,21 @@ function App() {
           </p>
 
           <div className="flex flex-1 items-center justify-center">
-            <div className="max-w-3xl space-y-5 text-center">
-              {ABOUT_PARAGRAPHS.map((paragraph) => (
-                <p key={paragraph} className="text-base leading-relaxed text-foreground sm:text-lg">
-                  {paragraph}
-                </p>
+            <div className="flex w-full max-w-3xl flex-col items-center gap-4 text-center">
+              {ABOUT_TAG_GROUPS.map((group, groupIndex) => (
+                <div key={`about-tag-group-${groupIndex}`} className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
+                  {group.map((tag, tagIndex) => (
+                    <span
+                      key={tag}
+                      className={[
+                        'liquid-glass inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm text-foreground sm:text-base',
+                        group.length === 1 && tagIndex === 0 ? 'sm:col-start-2' : '',
+                      ].join(' ')}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               ))}
             </div>
           </div>

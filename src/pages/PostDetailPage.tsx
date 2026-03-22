@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 
+import ShaderBackground from '@/components/ShaderBackground'
 import { getPostDetail, type PostDetail } from '@/lib/content'
 
 function PostDetailPage() {
@@ -38,15 +39,7 @@ function PostDetailPage() {
   if (isLoading) {
     return (
       <main className="relative min-h-screen bg-background text-foreground">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="fixed inset-0 z-0 h-full w-full object-cover"
-        >
-          <source src="/hero-bg.mp4" type="video/mp4" />
-        </video>
+        <ShaderBackground />
         <div className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 text-center">
           <p className="text-sm text-muted-foreground">加载中...</p>
         </div>
@@ -57,15 +50,7 @@ function PostDetailPage() {
   if (!post) {
     return (
       <main className="relative min-h-screen bg-background text-foreground">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="fixed inset-0 z-0 h-full w-full object-cover"
-        >
-          <source src="/hero-bg.mp4" type="video/mp4" />
-        </video>
+        <ShaderBackground />
         <div className="relative z-10 mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-6 text-center">
           <h1
             className="text-4xl text-foreground"
@@ -83,15 +68,7 @@ function PostDetailPage() {
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 z-0 h-full w-full object-cover"
-      >
-        <source src="/hero-bg.mp4" type="video/mp4" />
-      </video>
+      <ShaderBackground />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 py-10">
         <header className="space-y-3 pb-10 text-center">
